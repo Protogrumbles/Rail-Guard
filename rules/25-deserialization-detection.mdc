@@ -1,0 +1,69 @@
+---
+alwaysApply: false
+---
+
+# Deserialization Vulnerability Detection Rules
+
+## R: Risk First
+
+Goal: Identify insecure deserialization vulnerabilities allowing arbitrary code execution
+Risk: Remote code execution (RCE), DoS, authentication bypass, privilege escalation
+Context: Applications deserializing data from untrusted sources (APIs, message queues, cookies, files)
+
+## Critical Detection Boundaries
+
+- ALWAYS identify ALL deserialization entry points regardless of format
+- NEVER assume format-based serialization (JSON/XML) is safe without analyzing library configs
+- ALWAYS trace data flow from network endpoints to deserialization sinks
+- ALWAYS check for type handling configurations enabling polymorphic deserialization
+
+## Detection Awareness
+
+- Native serialization (Java ObjectInputStream, .NET BinaryFormatter, Python pickle) is ALWAYS vulnerable
+- JSON/XML libraries become vulnerable when type information is preserved
+- Protocol-specific endpoints (RMI/1099, JMX, T3/7001) often expose deserialization
+
+## Vulnerability Patterns by Language
+
+### Java
+ObjectInputStream.readObject, XMLDecoder.readObject, Kryo.readClassAndObject,
+xstream.fromXML, JSON.parseObject, mapper.readValue (with enableDefaultTyping)
+
+### Python
+pickle.loads, pickle.load, yaml.load (without SafeLoader), jsonpickle.decode, dill.loads
+
+### JavaScript/Node.js
+nodeSerialize.unserialize, serialize.unserialize, eval, Function constructor
+
+### C#/.NET
+BinaryFormatter.Deserialize, SoapFormatter.Deserialize,
+JsonConvert.DeserializeObject (with TypeNameHandling)
+
+### PHP
+unserialize (with user input)
+
+## Binary Format Indicators
+- Java Serialization: hex AC ED 00 05, base64 rO0
+- .NET Binary: base64 AAEAAAD/////
+- Python Pickle: base64 gASV (protocol 4)
+- PHP Serialization: starts with a: (array), O: (object)
+
+## JSON Type Handling Indicators
+- Jackson/Java: @class, @type fields
+- Json.NET/C#: $type field
+- Fastjson: @type field
+
+## Severity Assessment
+
+CRITICAL: Native serialization with untrusted input, exposed RMI/JMX/T3 endpoints, type-enabled JSON/XML processing
+HIGH: Deserialization behind authentication, custom serialization with unsafe readObject
+MEDIUM: Deserialization with class filtering, internal-only endpoints
+LOW: Heavily restricted allowlists, no known gadgets available
+
+## Remediation Priority
+
+1. Disable native serialization entirely where possible
+2. Remove type handling from JSON/XML parsers
+3. Block vulnerable protocol ports (RMI, JMX, T3)
+4. Implement strict class filtering if serialization required
+5. Use data-only formats (JSON without types) for APIs

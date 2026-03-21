@@ -1,0 +1,109 @@
+---
+alwaysApply: true
+---
+
+# Security Analysis Workflow
+
+Comprehensive step-by-step process for conducting security vulnerability analysis.
+
+## Mandatory Analysis Steps
+
+### 1. Codebase Discovery
+- Identify all source code files
+- Map application architecture and entry points
+- Identify data flows and trust boundaries
+- Catalog external dependencies and integrations
+
+### 1.5. Language and Framework Detection
+- Apply `@19-language-detection-and-matching.mdc` to identify primary language
+- Detect frameworks in use (FastAPI, Django, Spring Boot, Express, React, etc.)
+- Store language context for remediation selection
+
+### 2. Static Code Analysis
+
+Apply RAILGUARD methodology to each code file. Check for OWASP Top 10 vulnerabilities.
+
+**MANDATORY Vulnerability Detection Rules (Apply to ALL codebases):**
+- `@02-input-validation.mdc`: Input validation and sanitization patterns
+- `@03-authentication.mdc`: Authentication and session management
+- `@07-logic-vulnerability-analysis.mdc`: Business logic flaws and workflow bypasses
+- `@12-xss-ssti-detection.mdc`: XSS and Server-Side Template Injection
+- `@26-serialization-usage-discovery.mdc`: Serialization usage discovery
+- `@27-cors-usage-discovery.mdc`: CORS implementation discovery
+- `@23-hardcoded-credentials-detection.mdc`: Hardcoded credentials
+
+### 2.1. Verification Checkpoint
+Before proceeding, confirm ALL mandatory rules have been applied:
+- [ ] Input validation
+- [ ] Authentication issues
+- [ ] Logic flaws
+- [ ] XSS/SSTI vulnerabilities
+- [ ] Serialization usage discovery
+- [ ] CORS implementation discovery
+- [ ] Hardcoded credentials
+
+### 2.5. Plan Specialized Rule Loading
+Review `@20-specialized-rule-dispatch.mdc` to determine when to load vulnerability-specific rules:
+- Serialization usage detected → load deserialization rules
+- CORS implementation detected → load CORS rules
+- SQL database usage → may need SQL injection rules
+- Web framework → may need XSS prevention rules
+
+### 3. Configuration Security Review
+- Review security configurations
+- Apply `@23-hardcoded-credentials-detection.mdc` to identify hardcoded secrets
+- Distinguish properly managed secrets from vulnerabilities
+- Analyze access controls and permissions
+
+### 4. Architecture Security Assessment
+- Evaluate overall security architecture
+- Identify potential attack vectors
+- Assess defense-in-depth implementation
+- Review security boundaries and trust zones
+
+### 5. False Positive and Mitigation Analysis (MANDATORY FINAL STEP)
+Apply `@28-false-positive-and-mitigation-analysis.mdc` BEFORE report generation:
+- Analyze each finding for false positive indicators
+- Check for existing mitigations that affect exploitability
+- Verify complete attack chains for each vulnerability
+- Remove completely mitigated or unexploitable findings
+- Adjust severity based on actual exploitability conditions
+
+## Report Generation Structure
+
+```markdown
+# RAILGUARD Security Analysis Report
+
+## Executive Summary
+- Total vulnerabilities found: [X]
+- Critical: [X] | High: [X] | Medium: [X] | Low: [X]
+
+## Critical Findings
+[Use @15-standardized-finding-format.mdc]
+
+## High Priority Findings
+[Use @15-standardized-finding-format.mdc]
+
+## Medium Priority Findings
+[Use @15-standardized-finding-format.mdc]
+
+## Low Priority Findings
+[Use @15-standardized-finding-format.mdc]
+
+## Remediation Roadmap
+1. Immediately Exploitable Issues
+2. Conditionally Exploitable Issues
+3. Defense-in-Depth Improvements
+
+---
+Would you like me to save this security report to a file?
+```
+
+## Workflow Completion Criteria
+
+Analysis is complete when:
+- All mandatory steps have been executed
+- False positive analysis has been completed
+- All findings follow standardized format
+- All severity assessments are justified
+- Report structure is complete and accurate

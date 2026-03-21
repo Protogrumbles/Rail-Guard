@@ -1,0 +1,63 @@
+---
+alwaysApply: true
+---
+
+# Validation and Quality Assurance
+
+Mandatory validation requirements and quality controls for security findings.
+
+## Universal Validation Checklist
+
+### Basic Structure Validation
+- Vulnerability Title is clear and specific
+- Description is exactly one concise sentence
+- Location includes accurate file:line and endpoint/function name
+- Severity uses `@17-severity-assessment-framework.mdc`
+- All required sections are present and complete
+
+### Code Snippet Validation
+- Vulnerable Code Snippet shows EXACT code from the EXACT file:line specified
+- Code snippet demonstrates the EXACT vulnerability described in the title
+- Code snippet is unique to this finding (no cross-contamination)
+- Code context is sufficient to understand the vulnerability
+
+### Remediation Validation
+- Remediation steps are numbered, specific, and actionable
+- Secure Implementation Example is complete and directly fixes the vulnerability
+- Language of remediation matches the target application language
+
+### Technical Validation
+- All code blocks are properly formatted with correct language tags
+- Code syntax is valid for the specified programming language
+- File paths and line numbers are accurate and verifiable
+
+## Critical Code Snippet Validation
+
+**ANSWER YES TO ALL BEFORE PROCEEDING:**
+- Does this code snippet come from the EXACT file:line specified?
+- Does this code snippet demonstrate the EXACT vulnerability in the title?
+- Is this code snippet different from snippets in other findings?
+- Would a developer find THIS EXACT vulnerability at THIS EXACT location?
+
+## Language Compatibility Validation
+
+- Has the target language been identified using `@19-language-detection-and-matching.mdc`?
+- Do remediation code examples match the target language?
+- If language mismatch exists, is the compatibility notice provided?
+
+## False Positive Analysis Validation
+
+- False positive analysis completed using `@28-false-positive-and-mitigation-analysis.mdc`
+- Each finding verified for exploitability
+- Existing mitigations assessed
+- Severity adjustments justified and documented
+- Attack chains fully traced and verified
+
+## Validation Failure Protocol
+
+IF ANY VALIDATION REQUIREMENT FAILS:
+1. STOP immediately
+2. Re-examine the code to find the correct vulnerability location
+3. Fix the code sample, remediation, or assessment
+4. Re-run ALL validation checks
+5. Only proceed when EVERY requirement is met

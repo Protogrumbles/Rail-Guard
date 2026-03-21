@@ -1,0 +1,71 @@
+---
+alwaysApply: true
+---
+
+# XSS and Server-Side Template Injection (SSTI) Detection Rules
+
+## R: Risk First
+
+**Goal**: Identify XSS and SSTI vulnerabilities through static code analysis
+**Risk**: XSS enables client-side script execution; SSTI enables server-side code execution with full application privileges
+**Context**: Code analysis of web applications that render user-controlled data or use template engines
+
+## A: Attached Constraints
+
+- ALWAYS validate ALL user-controlled variable outputs for XSS/SSTI
+- ALWAYS leverage a checklist for verification of user-controlled output variables
+- NEVER assume framework defaults provide complete protection without verifying escape hatch usage
+- ALWAYS trace data flow from user input sources to rendering sinks
+- NEVER ignore indirect paths through databases, caches, or file systems
+
+**ANALYSIS AWARENESS**:
+- SSTI vulnerabilities are CRITICAL severity (remote code execution)
+- ALWAYS prioritize SSTI findings over XSS when detected in the same code path
+- Framework escape hatches are primary vulnerability sources
+
+## I: Interpretative Framing
+
+**SSTI Indicators:**
+- `render_template_string`, `Template().render()` (Python/Jinja2)
+- `compile()`, `evaluate()`, `eval()` (JavaScript)
+- `engine.render()`, `process()` (Java)
+- String formatting/interpolation into template strings
+
+**XSS Indicators:**
+- `innerHTML`, `outerHTML`, `document.write()`
+- `insertAdjacentHTML()`, `eval()`, `Function()`
+- `bypassSecurityTrust*` (Angular), `dangerouslySetInnerHTML` (React)
+- jQuery: `html()`, `append()`, `prepend()`
+
+**Configuration Red Flags:**
+- `autoescape=False`, `autoescaping: false`
+- `safe=True`, `|safe` filter usage
+- `trust()`, `trusted()`, `raw()` methods
+
+## L: Local Defaults
+
+**Severity Differentiation:**
+```
+IF user_input reaches template_compilation_method THEN
+  vulnerability = SSTI, severity = CRITICAL
+ELSE IF user_input reaches dangerous_browser_sink THEN
+  vulnerability = XSS
+  IF stored_in_database THEN severity = HIGH (Stored XSS)
+  ELSE IF reflected_immediately THEN severity = HIGH (Reflected XSS)
+  ELSE IF requires_user_interaction THEN severity = MEDIUM (DOM XSS)
+```
+
+## G: Generative Path Checks
+
+1. Is a template engine being used and which one?
+2. Can user input reach template compilation or rendering?
+3. Is auto-escaping disabled or bypassed anywhere?
+4. Does user input flow to innerHTML or similar methods?
+5. Is HTML/JavaScript being built through concatenation?
+6. Are framework security features being bypassed?
+7. Does user input flow through storage before rendering?
+8. Are custom rendering functions properly escaping?
+
+## Core Security Principle
+
+Identify SSTI vulnerabilities first as they are more severe. Look for user input reaching template compilation, evaluation, or rendering functions. For XSS, identify dangerous sinks and string concatenation patterns. Always trace complete data flow from input to output.

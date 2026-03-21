@@ -1,0 +1,61 @@
+---
+agentRequested: true
+---
+
+# XSS Type Classification and Severity Assessment
+
+## Classification Decision Tree
+
+1. Where does the payload originate?
+   - User form/input that gets saved: Stored XSS
+   - URL parameter/form that gets echoed: Reflected XSS
+   - URL fragment/client-side source: DOM-based XSS
+
+2. Does the server process the payload?
+   - YES and stores it: Stored XSS
+   - YES and returns immediately: Reflected XSS
+   - NO: DOM-based XSS
+
+3. Can multiple users be affected?
+   - YES: Stored XSS
+   - NO: Reflected or DOM-based XSS
+
+## Quick Classification Guide
+
+| Characteristic | Stored | Reflected | DOM-based |
+|----------------|--------|-----------|-----------|
+| Server processes payload | Yes | Yes | No |
+| Payload persisted | Yes | No | No |
+| Multiple victims | Yes | No | No |
+| Requires malicious link | No | Yes | Yes |
+| Payload in server logs | Yes | Yes | No |
+| Survives page refresh | Yes | No | No |
+
+## Severity by Type
+
+### Stored XSS (Persistent) - HIGH to CRITICAL
+- Payload stored in database/file system, affects multiple users
+- CRITICAL if affects admin interfaces or all users
+- HIGH for user-generated content areas
+
+### Reflected XSS (Non-Persistent) - MEDIUM to HIGH
+- Requires victim to click malicious link
+- HIGH for authenticated areas or sensitive operations
+- MEDIUM for public pages with limited impact
+
+### DOM-based XSS - LOW to HIGH
+- Payload never reaches server, entirely client-side
+- HIGH if affects critical functionality or auth tokens
+- MEDIUM for general content areas
+- LOW if requires complex user interaction
+
+## Key DOM-based XSS Indicators
+- Uses window.location.hash or window.location.search
+- Processes document.referrer or document.URL
+- Uses postMessage without validation
+- Client-side template rendering in SPAs
+
+## Edge Cases
+- WebSocket XSS: Stored if server broadcasts, Reflected if echoes
+- API-driven XSS: Stored if API persists, Reflected if immediate response
+- If hybrid (stored plus DOM manipulation): Classify as Stored (higher severity)

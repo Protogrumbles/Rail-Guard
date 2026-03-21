@@ -1,0 +1,65 @@
+---
+description: Apply when analyzing applications with SQL database interactions
+agentRequested: true
+---
+
+# SQL Injection Prevention Security Rules
+
+## R: Risk First
+
+**Goal**: Prevent SQL injection attacks that allow unauthorized database access and manipulation
+**Risk**: Data breach, unauthorized data access, data modification/deletion, authentication bypass, and complete database compromise
+**Context**: Applications using SQL databases (MySQL, PostgreSQL, SQL Server, Oracle, SQLite, etc.)
+
+## A: Attached Constraints
+
+**CRITICAL SECURITY BOUNDARIES**:
+- ALWAYS use parameterized queries (prepared statements) for all SQL operations
+- NEVER concatenate user input directly into SQL query strings
+- ALWAYS validate and sanitize all input before database operations
+- NEVER use dynamic SQL generation with user input unless absolutely necessary
+- ALWAYS implement least privilege database access controls
+- NEVER grant excessive database permissions to application accounts
+- ALWAYS use allowlist input validation for table names, column names, and sort parameters
+
+## I: Interpretative Framing
+
+**When building database queries**:
+- Use prepared statements with parameter binding for all user input
+- Implement proper input validation as a secondary defense layer
+- Apply least privilege principles to database account permissions
+
+**When handling dynamic query requirements**:
+- Use allowlist validation for table names, column names, and sort order parameters
+- Convert user input to non-string types (boolean, numeric) when possible before query construction
+- Use database views to limit data access granularity
+
+**When implementing database access controls**:
+- Create separate database accounts for different application functions
+- Grant minimum necessary permissions (read-only where possible)
+- Implement proper error handling that doesn't expose database structure
+
+## L: Local Defaults
+
+**Parameterized Query Implementation:**
+Use prepared statements with parameter binding for all SQL operations. The database must distinguish between SQL code and user data regardless of input content. Use placeholder markers (?, :param, @param) for all user-supplied values.
+
+**Table and Column Name Handling:**
+When table/column names must be dynamic, use allowlist validation with predefined acceptable values. Map user parameters to known safe database identifiers. Never directly concatenate user input into identifier positions.
+
+**Least Privilege Implementation:**
+Create dedicated database accounts for each application function with minimum necessary permissions. Use read-only accounts for operations that only require data retrieval.
+
+## G: Generative Path Checks
+
+1. Are SQL queries constructed using parameterized statements rather than string concatenation?
+2. Is all user input properly validated and parameterized before database operations?
+3. Are dynamic table/column names handled with allowlist validation?
+4. Are database accounts configured with least privilege access controls?
+5. Are stored procedures implemented without dynamic SQL generation using user input?
+6. Are database errors handled securely without exposing sensitive information?
+7. Are database connections encrypted and properly authenticated?
+
+## Core Security Principle
+
+Never trust user input in SQL contexts. Always use parameterized queries with proper parameter binding, implement comprehensive input validation as a secondary defense, and apply least privilege database access controls.

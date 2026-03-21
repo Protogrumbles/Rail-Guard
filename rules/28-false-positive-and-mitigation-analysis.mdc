@@ -1,0 +1,77 @@
+---
+alwaysApply: true
+---
+
+# False Positive Detection and Mitigation Analysis
+
+Mandatory final analysis step to identify false positives and assess mitigations.
+
+## Three Categories of Findings
+
+### 1. FALSE POSITIVES (Remove from report)
+- Framework protections make exploitation impossible (auto-escaping, parameterization)
+- Encrypted values misidentified as plaintext secrets
+- Test/mock code that never runs in production
+- Misidentified vulnerabilities due to analysis limitations
+
+### 2. REAL BUT NOT EXPLOITABLE (Report with LOW severity)
+- Vulnerability in unreachable/dead code
+- Vulnerability in unused functions
+- Missing attack vector (no user input reaches vulnerability)
+- Prerequisites cannot be met in current deployment
+
+### 3. EXPLOITABLE WITH BARRIERS (Report with REDUCED severity)
+- Requires authentication (reduce 1 level)
+- Requires admin access (reduce 1 level)
+- Protected by rate limiting (reduce 1 level)
+- Network isolation limits access (reduce 1 level)
+
+## False Positive Examples
+
+### Framework Auto-Escaping (XSS False Positive)
+Template rendering with auto-escaping enabled in Django, Jinja2, React JSX, Angular templates, Vue text interpolation. These are safe by default.
+
+### ORM Parameterization (SQL Injection False Positive)
+Django ORM queries using filter/get/exclude, SQLAlchemy ORM methods, Prisma/Sequelize/TypeORM query builders, Spring Data JPA repository methods. These auto-parameterize.
+
+### Managed Secrets (Hardcoded Credential False Positive)
+Environment variable references, secret manager references (Vault, AWS SSM, etc.), CI/CD secrets, placeholder values in example configs.
+
+### Test/Mock Code
+Test fixtures with fake credentials, mock objects in test files, development-only configuration.
+
+## Categorization Guidelines
+
+**REMOVE (False Positives):**
+- Template rendering with framework auto-escaping enabled
+- ORM queries using built-in methods
+- Environment variables and secret manager references
+- Test/mock code that does not run in production
+- Framework-mitigated vulnerabilities (CSRF tokens, etc.)
+
+**REPORT AS LOW SEVERITY (Real but Not Exploitable):**
+- Vulnerability in dead/unreachable code
+- RCE/SQLi/XSS in unused functions
+- Vulnerable code with no input path from user
+- Best practice violations with no current exploit path
+
+**REDUCE SEVERITY (Exploitable with Barriers):**
+- Admin-only endpoints (reduce 1 level)
+- Authenticated endpoints (reduce 1 level)
+- Rate-limited endpoints (reduce 1 level)
+- Multiple mitigations stack cumulatively (minimum LOW)
+
+## Analysis Workflow
+
+1. Initialize: Preserve original findings for audit trail
+2. For each finding: Check false positives, identify mitigations, verify exploitability
+3. Determine action: REMOVE, ADJUST severity, or KEEP
+4. Document: Record all decisions with justifications
+
+## Key Principle
+
+When in doubt, report with reduced severity rather than removing. It is better to report a low-severity finding that might not be exploitable than to miss a real vulnerability.
+
+## Core Principle
+
+Execute false positive and mitigation analysis as the final quality gate. Remove ONLY false positives (framework-mitigated, misidentified). Report real vulnerabilities with adjusted severity based on exploitability. Never remove real vulnerabilities just because they are not currently exploitable.

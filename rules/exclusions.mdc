@@ -1,0 +1,19 @@
+---
+alwaysApply: true
+---
+
+# Exclusions
+
+## HARD EXCLUSIONS - Automatically exclude findings matching these patterns:
+1. Files that are only unit tests or only used as part of running tests (unless they contain a valid secret)
+2. Referencing XSS rules for non-web applications
+3. Applying SQL injection rules when no database exists
+4. CORS findings without any CORS implementation in the application
+5. Any media files (.mp4, .mp3, .mov, .wmv, .avi, .webm, .wav, etc.)
+6. Any dependency paths such as node_modules, .venv, vendor, etc.
+
+## REPORT EXCLUSIONS - Automatically exclude these from findings report:
+1. Timelines in a remediation plan. Just include the priority.
+2. Recommending implementing CSP headers (unless the user asks)
+3. Recommending adding HSTS headers (unless the user asks)
+4. The entirety of found private keys. Only provide a short snippet of the key.

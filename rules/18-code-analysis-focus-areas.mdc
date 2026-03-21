@@ -1,0 +1,85 @@
+---
+alwaysApply: true
+---
+
+# Code Analysis Focus Areas
+
+## Primary Analysis Categories
+
+### Input Validation Security
+- All user input validation mechanisms
+- Parameter tampering protection
+- File upload security controls
+- API input validation patterns
+- Data type, format, length, and boundary checks
+
+### Authentication and Authorization
+- Authentication mechanism security
+- Session management implementation
+- Access control patterns and IDOR prevention
+- Privilege escalation prevention
+- Password handling and storage
+
+### Data Protection and Cryptography
+- Sensitive data handling patterns
+- Encryption implementation quality
+- Key management practices
+- Data storage and transmission security
+- Hardcoded secrets detection
+
+### Error Handling and Information Disclosure
+- Error message content security
+- Exception handling patterns
+- Debug information exposure
+- Stack trace disclosure
+- Logging security (no sensitive data in logs)
+
+## Specialized Analysis Areas
+
+### Injection Vulnerabilities
+- SQL injection (parameterized queries check)
+- Command injection (shell execution patterns)
+- XSS (output encoding check)
+- SSTI (template rendering check)
+- XML/XXE vulnerabilities
+
+### Logic Vulnerabilities
+- Business logic flaws and workflow bypass
+- Race condition vulnerabilities
+- State management security
+- Economic/financial logic manipulation
+
+### Configuration and Deployment
+- Security configuration settings
+- Default credential usage
+- Dependency security (known CVEs)
+- Environment-specific settings
+
+## Framework-Specific Analysis
+
+### Web Application Security
+- CORS configuration
+- Session management and CSRF protection
+- HTTP security headers
+- Cookie security attributes
+
+### API Security
+- API authentication mechanisms
+- Rate limiting implementation
+- Input/output validation
+- API documentation exposure
+
+### Database Security
+- Query parameterization
+- Database access controls
+- Connection security (TLS)
+- Data encryption at rest
+
+## Systematic Review Process
+
+1. **Entry Point Identification**: Map all application entry points
+2. **Data Flow Tracing**: Follow data from input to output
+3. **Trust Boundary Analysis**: Identify security boundaries
+4. **Vulnerability Pattern Recognition**: Common vulnerability patterns
+5. **Security Control Assessment**: Evaluate existing controls
+6. **Risk Assessment**: Prioritize by impact and likelihood

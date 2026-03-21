@@ -1,0 +1,58 @@
+---
+description: Apply when CORS implementation is detected in the application
+agentRequested: true
+---
+
+# CORS Vulnerability Severity Assessment Framework
+
+## R: Risk First
+
+**Goal**: Accurately assess CORS vulnerability severity based on real-world exploitability
+**Risk**: Over-classification of CORS misconfigurations leads to resource misallocation
+**Context**: CORS vulnerabilities require specific conditions to be exploitable
+
+## Quick Assessment Flow
+
+1. Is CORS implemented? No: Skip assessment
+2. Is it misconfigured? No: No vulnerability
+3. Check exploitability:
+   - Returns sensitive data? MEDIUM+
+   - Has XSS/CSRF vulns? HIGH+
+   - Critical business system? Consider MEDIUM+
+   - None of above? LOW (default)
+
+## A: Attached Constraints
+
+- ONLY assess CORS when CORS implementation already exists
+- NEVER recommend implementing CORS if not already present
+- ALWAYS default to LOW severity for standard CORS misconfigurations
+- NEVER assign HIGH/CRITICAL without confirmed exploitability requirements
+
+## L: Local Defaults
+
+**Default Assessment**: LOW severity for standard CORS misconfigurations
+
+**Exploitability Requirements for Higher Severity:**
+
+MEDIUM Severity (Uncommon):
+- CORS allows attacker-controlled origins with credentials AND
+- Endpoint performs state-changing operations with weak CSRF protection AND
+- ONE secondary vulnerability exists (XSS, CSRF bypass, sensitive data in response)
+
+LOW Severity (Default):
+- Standard CORS misconfiguration
+- No exploitable secondary vulnerabilities
+- Proper CSRF protection in place
+- No sensitive data in response bodies
+
+## G: Generative Path Checks
+
+1. Does the application contain CORS headers in responses?
+2. Is Access-Control-Allow-Origin set to wildcard with credentials?
+3. Do endpoints return sensitive data in response bodies?
+4. Are there unprotected state-changing operations?
+5. Are secondary vulnerabilities (XSS, CSRF) present?
+
+## Core Security Principle
+
+CORS misconfigurations are LOW severity by default. Higher severity requires specific exploitability conditions.

@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+---
+
+# Output Format and File Generation Rules
+
+## Core Output Requirements
+
+### NEVER Automatically Create Files
+
+1. Display in Chat Window:
+   - ALL security findings must be displayed in the chat/conversation window
+   - Use markdown formatting for readability
+   - Include code snippets inline
+   - Present complete analysis without file generation
+
+2. File Creation Only on Request:
+   - ALWAYS ask the user after displaying results
+   - Example: "Would you like me to save this security report to a file?"
+   - Only create file if user responds affirmatively
+
+### Output Format Structure
+
+Display the full RAILGUARD Security Analysis Report in chat, then offer:
+- Save full report to file
+- Create individual remediation files
+- Create summary document
+
+## Special Cases
+
+1. Large Reports: Still display in chat, offer to create file due to size
+2. Multiple Vulnerabilities: Group by severity, offer structured output if more than 10 findings
+3. Code Examples: Include inline with syntax highlighting, do not create separate files unless asked
+
+## Core Principle
+
+The chat window is the primary interface. Files are secondary and optional.

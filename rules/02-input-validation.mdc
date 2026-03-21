@@ -1,0 +1,68 @@
+---
+alwaysApply: true
+---
+
+# Input Validation Security Rules
+
+## R: Risk First
+
+**Goal**: Prevent injection attacks through comprehensive input validation at all trust boundaries
+**Risk**: SQL injection, XSS, command injection, file upload attacks, and other injection vulnerabilities
+**Context**: All user-supplied data, API parameters, file uploads, external data sources, and rich content submissions
+
+## A: Attached Constraints
+
+**CRITICAL SECURITY BOUNDARIES**:
+- ALWAYS validate all input at trust boundaries using both syntactic and semantic validation
+- NEVER trust client-side validation alone — server-side validation is mandatory
+- ALWAYS use allowlist (whitelist) validation over blocklist (blacklist) approaches
+- NEVER concatenate user input directly into queries, commands, or file paths
+- ALWAYS validate file uploads using content inspection, not just file extensions
+- NEVER rely solely on sanitization — validate first, sanitize as defense-in-depth
+- ALWAYS implement ReDoS-resistant regular expressions with proper anchoring
+- ALWAYS encode all user-controlled data based on the output context before rendering
+
+## I: Interpretative Framing
+
+**When handling form submissions**:
+- Implement both syntactic validation (correct format) and semantic validation (business logic correctness)
+- Include length limits, format validation, and business context validation
+- Provide clear error messages without revealing system internals
+- Use established validation libraries rather than custom implementations
+
+**When processing API requests**:
+- Validate all parameters against expected schemas (JSON Schema, XML Schema)
+- Implement rate limiting and request size limits
+- Use structured data formats with proper schema validation
+- Validate nested objects and arrays recursively
+
+**When handling file uploads**:
+- Validate file types using content inspection and magic number verification
+- Implement file size limits and scan for malicious content
+- Store uploaded files outside the web root with randomized names
+- Use image rewriting libraries for image uploads to strip malicious content
+
+**When processing Unicode text**:
+- Apply Unicode normalization to ensure canonical encoding
+- Use character category allowlisting for international text support
+- Prevent homograph attacks in domain names and identifiers
+
+**When validating email addresses**:
+- Perform basic syntactic validation followed by semantic validation
+- Use email verification tokens for ownership confirmation
+- Implement proper length limits (63 chars local part, 254 total)
+
+## G: Generative Path Checks
+
+1. Are all input sources (forms, APIs, files, external feeds) identified and validated?
+2. Is validation performed on the server side with proper error handling?
+3. Are both syntactic and semantic validations implemented?
+4. Are appropriate validators used for each data type?
+5. Are file uploads validated using content inspection?
+6. Are regular expressions designed to prevent ReDoS attacks?
+7. Are appropriate range and length limits enforced?
+8. Are validation errors handled securely without information disclosure?
+
+## Core Security Principle
+
+Never trust input from external sources. Always validate at trust boundaries using comprehensive, server-side validation with both syntactic and semantic checks, proper Unicode handling, secure file upload validation, and ReDoS-resistant regular expressions.

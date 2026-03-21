@@ -1,0 +1,55 @@
+---
+agentRequested: true
+---
+
+# Specialized Vulnerability Rule Dispatch
+
+Ensures vulnerability-specific rules are ONLY loaded when the corresponding vulnerability type is discovered.
+
+## Lightweight Discovery Rules (Load First)
+
+### Serialization Usage Discovery
+- Rule: 26-serialization-usage-discovery.mdc
+- Always Load during initial analysis to check for serialization usage
+- Triggers 25-deserialization-detection.mdc when serialization detected
+
+### CORS Usage Discovery
+- Rule: 27-cors-usage-discovery.mdc
+- Triggers 08-cors-severity-assessment.mdc when CORS detected
+
+## Conditional Rules (Load ONLY When Vulnerability Found)
+
+### Deserialization Vulnerabilities
+- Rule: 25-deserialization-detection.mdc
+- Trigger: Serialization method signatures found, deserialization libraries present
+- Skip When: No serialization usage detected
+
+### SQL Injection
+- Rule: 05-sql-injection-prevention.mdc
+- Trigger: String concatenation in SQL queries, missing parameterized queries
+- Skip When: No SQL database usage or all queries properly parameterized
+
+### CORS Misconfiguration
+- Rule: 08-cors-severity-assessment.mdc
+- Trigger: CORS headers or middleware found
+- Skip When: No CORS implementation detected
+
+### XSS Prevention
+- Rule: 06-xss-prevention.mdc
+- Trigger: XSS vulnerability detected, unsafe HTML rendering
+- Skip When: No web interface or all output properly encoded
+
+### LLM Prompt Injection
+- Rule: 04-llm-prompt-injection.mdc
+- Trigger: LLM API integration detected (OpenAI, Anthropic, etc.)
+- Skip When: No LLM integration present
+
+## Rule Loading Protocol
+
+When a vulnerability is found, check if a specialized rule exists for it. If so, fetch and apply it. Otherwise use standard RAILGUARD remediation.
+
+## Critical Constraints
+
+NEVER load specialized rules during initial codebase discovery, as part of general analysis setup, or when the vulnerability type is not present.
+
+ALWAYS load specialized rules after confirming vulnerability presence, when trigger conditions are met, and for accurate severity assessment.

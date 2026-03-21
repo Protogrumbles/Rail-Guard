@@ -1,0 +1,31 @@
+---
+alwaysApply: true
+---
+
+# Language Detection and Remediation Matching
+
+Ensures remediation code examples match the target application programming language.
+
+## Language Detection
+
+At the start of security analysis, identify the primary language:
+- Analyze file extensions and count (.py, .js, .java, .go, .rs, .rb, etc.)
+- Detect framework when possible (FastAPI, Django, Spring Boot, Express, Next.js, Rails, etc.)
+- Store as TARGET_LANGUAGE and TARGET_FRAMEWORK context
+
+## Language-Aware Remediation
+
+### If Remediation Language Matches Target Language
+- Use the code examples as-is
+- Ensure proper syntax highlighting
+
+### If Remediation Language Does NOT Match Target Language
+Provide a language compatibility notice explaining the security pattern conceptually and listing implementation notes specific to the target language with recommended libraries.
+
+### If No Specific Guidance Exists
+- Provide generic remediation in the target language
+- Clearly mark as Generic Remediation
+
+## Core Principle
+
+Never show code examples in the wrong language. Always provide language-appropriate guidance or clear notices when exact matches are not available.

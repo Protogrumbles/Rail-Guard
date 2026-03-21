@@ -1,0 +1,49 @@
+---
+alwaysApply: true
+---
+
+# Serialization Usage Discovery Rule
+
+Detect the presence of serialization functionality to conditionally trigger comprehensive deserialization analysis.
+
+## When Serialization is Detected
+
+If any serialization usage is found, trigger full analysis via 25-deserialization-detection.mdc
+
+## Methods to Detect by Language
+
+### Java
+ObjectInputStream.readObject, ObjectOutputStream.writeObject, XMLDecoder.readObject,
+Kryo.readClassAndObject, xstream.fromXML, JSON.parseObject, mapper.readValue, yaml.load
+
+### Python
+pickle.loads, pickle.load, pickle.dumps, yaml.load, yaml.safe_load,
+jsonpickle.decode, dill.loads, marshal.loads
+
+### JavaScript/Node.js
+nodeSerialize.unserialize, serialize.unserialize, v8.serialize, v8.deserialize, eval, Function
+
+### C#/.NET
+BinaryFormatter.Deserialize, SoapFormatter.Deserialize,
+JsonConvert.DeserializeObject, XmlSerializer.Deserialize
+
+### PHP
+unserialize, serialize, igbinary_unserialize
+
+### Ruby
+Marshal.load, Marshal.dump, YAML.load
+
+### Go
+gob.Decode, gob.Encode, json.Unmarshal, xml.Unmarshal
+
+### Rust
+bincode::deserialize, serde_json::from_str
+
+## Conditional Rule Triggering
+
+IF serialization_usage_detected THEN
+  APPLY 25-deserialization-detection.mdc
+
+## Core Principle
+
+Efficiently identify serialization usage patterns across languages to ensure comprehensive vulnerability analysis is applied when needed.

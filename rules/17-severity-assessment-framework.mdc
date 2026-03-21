@@ -1,0 +1,84 @@
+---
+alwaysApply: true
+---
+
+# Vulnerability Severity Assessment Framework
+
+## CIA Triad Impact Assessment
+
+### Confidentiality Impact
+```
+HIGH: API keys, passwords, cryptographic secrets, session tokens, PII, financial data
+MEDIUM: User account info, internal architecture details, configuration details, error messages revealing internals
+LOW: Software version numbers, general system information, non-sensitive operational data
+```
+
+### Integrity Impact
+```
+HIGH: Can modify critical business data, alter auth mechanisms, inject code/commands
+MEDIUM: Can modify user data, alter non-critical settings, inject content in user-facing areas
+LOW: Can only modify non-critical display elements, alter temporary data
+```
+
+### Availability Impact
+```
+HIGH: Can cause complete system outage, consume all resources, crash critical services
+MEDIUM: Can cause partial degradation, affect specific user groups, temporary interruption
+LOW: Minimal performance impact, affects individual sessions only
+```
+
+## Information Disclosure Severity
+
+### Access Vector Impact on Severity
+
+**SOURCE CODE DISCLOSURE (Reduce severity by one level):**
+Requires source code access (repository, file system). Not accessible through application functionality.
+
+**APPLICATION DISCLOSURE (Maintain full severity):**
+Accessible via normal application usage. No special access requirements.
+
+**PUBLIC DISCLOSURE (Maintain or increase severity):**
+Accessible without authentication. Publicly discoverable.
+
+### Severity by Information Type
+
+**CRITICAL**: API keys in public responses, database credentials in public endpoints, auth tokens in responses
+**HIGH**: API keys in authenticated responses, cloud credentials in app-accessible locations
+**MEDIUM**: API keys in source code, user PII in error messages, internal architecture in responses
+**LOW**: Software versions in headers, general system info, non-sensitive configuration
+
+## Vulnerability-Specific Assessment
+
+### XSS Assessment
+- CRITICAL: Stored XSS in admin panel, stored XSS in user management
+- HIGH: DOM XSS in authenticated area, reflected XSS with session access, stored XSS in user content
+- MEDIUM: Reflected XSS in public form, DOM XSS in non-sensitive areas
+- LOW: XSS in error pages, self-XSS requiring significant user cooperation
+
+### SQL Injection Assessment
+- CRITICAL: Public endpoint with full DB access, union-based SQLi with sensitive data
+- HIGH: Authenticated endpoint with user data access, boolean-based blind SQLi
+- MEDIUM: Admin endpoint with limited DB access, time-based blind SQLi
+- LOW: Internal tool with read-only access, SQLi accessing only non-sensitive data
+
+### Authentication/Authorization Assessment
+- CRITICAL: Complete auth bypass, admin privilege escalation
+- HIGH: User privilege escalation, session management flaws allowing account takeover
+- MEDIUM: IDOR in sensitive but non-critical data, weak auth with additional barriers
+- LOW: IDOR in non-sensitive data, auth weaknesses requiring insider access
+
+## Contextual Adjustment
+
+**PUBLIC EXPOSURE (maintain/increase):** Internet-accessible, no auth required
+**AUTHENTICATED ACCESS (maintain):** Requires valid auth, limited roles
+**INTERNAL ACCESS (consider reducing):** Requires VPN/internal network, admin-only
+
+**TRIVIAL EXPLOITATION (maintain/increase):** Direct input to vulnerable code, automated exploitation possible
+**COMPLEX EXPLOITATION (consider reducing):** Multiple conditions required, significant user interaction needed
+
+## Assessment Process
+
+1. Evaluate CIA Triad Impact
+2. Apply Information Disclosure specific logic
+3. Apply Contextual Adjustments (access vector, exploitability)
+4. Determine Final Severity with clear justification

@@ -1,0 +1,69 @@
+---
+description: Apply when analyzing applications with LLM/AI model integrations
+agentRequested: true
+---
+
+# LLM Prompt Injection Security Rules
+
+## R: Risk First
+
+**Goal**: Prevent prompt injection attacks that manipulate LLM behavior and bypass safety controls
+**Risk**: Unauthorized data access, system prompt leakage, safety control bypass, persistent manipulation, and unauthorized actions via connected tools
+**Context**: Applications integrating Large Language Models (OpenAI, Anthropic, Google, local models, etc.)
+
+## A: Attached Constraints
+
+**CRITICAL SECURITY BOUNDARIES**:
+- ALWAYS separate system instructions from user data using structured prompts
+- NEVER concatenate user input directly with system prompts without validation
+- ALWAYS validate and sanitize user input before sending to LLMs
+- NEVER trust LLM outputs without validation — implement output monitoring
+- ALWAYS implement human-in-the-loop controls for high-risk operations
+- NEVER expose system prompts or internal configurations in responses
+- ALWAYS apply principle of least privilege to LLM tool access and permissions
+- NEVER process external content without sanitization for injection patterns
+
+## I: Interpretative Framing
+
+**When integrating LLMs in applications**:
+- Use structured prompt formats that clearly separate system instructions from user data
+- Implement comprehensive input validation including pattern detection and fuzzy matching
+- Apply output monitoring to detect successful injection attempts
+
+**When processing external content with LLMs**:
+- Sanitize all external content (web pages, documents, code comments) before LLM processing
+- Remove or filter suspicious markup, hidden text, and encoded content
+- Validate encoding and decode suspicious content for inspection
+
+**When building LLM agents with tool access**:
+- Validate all tool calls against user permissions and session context
+- Implement tool-specific parameter validation and sanitization
+- Monitor agent reasoning patterns for anomalies and manipulation attempts
+
+## L: Local Defaults
+
+**Direct Injection Pattern Detection:**
+Flag inputs containing: "ignore all previous instructions", "you are now in developer mode", "system override", "reveal your prompt", "bypass safety", "jailbreak", "DAN mode".
+
+**Encoding Attack Detection:**
+Check for base64 encoded content, hex encoded strings, Unicode smuggling with invisible characters. Decode suspicious content and scan for injection patterns.
+
+**Structured Prompt Design:**
+Create clear boundaries: `SYSTEM_INSTRUCTIONS:` section containing the LLM's role and rules, followed by `USER_DATA_TO_PROCESS:` section containing user input to analyze.
+
+**Output Monitoring:**
+Monitor for system prompt leakage, API key exposure, or secret information appearing in responses.
+
+## G: Generative Path Checks
+
+1. Are LLM services integrated into the application?
+2. Is user input validated for injection patterns before sending to LLMs?
+3. Are system instructions clearly separated from user data in prompts?
+4. Are LLM responses monitored for signs of successful injection?
+5. Is external content sanitized before LLM processing?
+6. Do LLM agents have tool access that requires additional validation?
+7. Are high-risk operations subject to human review?
+
+## Core Security Principle
+
+Never trust user input or external content when integrating with LLMs. Always maintain clear separation between system instructions and user data, implement comprehensive validation and monitoring, and apply human oversight for high-risk operations.

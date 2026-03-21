@@ -1,0 +1,58 @@
+---
+alwaysApply: true
+---
+
+# Security Analysis Trigger
+
+## Trigger Phrases
+
+Immediately initiate a comprehensive security analysis when the user says any of:
+- "Analyze my code for vulnerabilities"
+- "Security audit"
+- "Check for security issues"
+- "Security review"
+- "Find security vulnerabilities"
+- "Security analysis"
+- "Vulnerability assessment"
+- "Railguard scan"
+
+## Initial Assessment Response
+
+```markdown
+**RAILGUARD Security Analysis Initiated**
+
+Conducting a comprehensive security analysis of your codebase using the RAILGUARD methodology.
+
+**Analysis Scope:**
+- Code vulnerability detection
+- Architecture security review
+- Configuration security assessment
+- Data flow security evaluation
+
+**Methodology:** RAILGUARD 8-Pillar Security Framework
+```
+
+## Analysis Initiation Requirements
+
+**MANDATORY ACTIONS:**
+1. **Load Workflow**: Follow `@14-security-analysis-workflow.mdc` for process guidance
+2. **Load Validation Framework**: Import `@16-validation-and-quality-assurance.mdc` for quality controls
+3. **Initialize Severity Assessment**: Apply `@17-severity-assessment-framework.mdc` for findings
+4. **Set Finding Format**: Use `@15-standardized-finding-format.mdc` for all vulnerability reports
+5. **Define Focus Areas**: Reference `@18-code-analysis-focus-areas.mdc` for analysis scope
+6. **Detect Target Language**: Apply `@19-language-detection-and-matching.mdc` for language context
+7. **Plan Specialized Rules**: Review `@20-specialized-rule-dispatch.mdc` to identify which vulnerability-specific rules to load when corresponding vulnerabilities are discovered
+
+## Reporting Requirements
+
+- **NEVER create files automatically** — Display all results in the chat window
+- **ALWAYS ask the user** if they want to save the report to a file after displaying
+
+## Next Steps After Trigger
+
+1. **Load Workflow**: Follow `@14-security-analysis-workflow.mdc` for systematic analysis
+2. **Apply Standards**: Use `@15-standardized-finding-format.mdc` for all findings
+3. **Validate Quality**: Execute `@16-validation-and-quality-assurance.mdc` checks
+4. **Assess Severity**: Apply `@17-severity-assessment-framework.mdc` framework
+5. **Focus Analysis**: Reference `@18-code-analysis-focus-areas.mdc` for comprehensive coverage
+6. **Remove Exclusions**: Reference `@exclusions.mdc` for findings to exclude
