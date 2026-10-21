@@ -180,6 +180,20 @@ class EndToEndTest(unittest.TestCase):
         )
         self.assertIn("U+200B", json.loads(edit.stdout)["additional_context"])
 
+    def test_warns_about_v1_rules(self):
+        (self.target / ".cursor/rules").mkdir(parents=True)
+        (self.target / ".cursor/rules/00-railguard-core.mdc").write_text("v1", encoding="utf-8")
+        (self.target / ".cursor/rules/team-style.mdc").write_text("mine", encoding="utf-8")
+        done = ih.install(self.target, {"cursor"})
+        self.assertTrue(any("1 RAILGUARD v1 rule files" in line for line in done))
+        self.assertTrue((self.target / ".cursor/rules/00-railguard-core.mdc").exists())
+
+    def test_v1_rule_list_matches_legacy_tag(self):
+        proc = subprocess.run(["git", "-C", str(ROOT), "ls-tree", "--name-only", "v1-legacy", "rules/"], capture_output=True, text=True)
+        if proc.returncode != 0:
+            self.skipTest("v1-legacy tag not available in this checkout")
+        self.assertEqual({Path(p).name for p in proc.stdout.split()}, set(ih.V1_RULE_FILES))
+
     def test_refuses_own_source_repo(self):
         with self.assertRaises(ih.InstallError):
             ih.install(ROOT, {"cursor"})

@@ -1,118 +1,129 @@
-# RAILGUARD Portable - AI-Powered Security Analysis for Cursor
+# RAILGUARDS
 
-A portable, open-source-friendly security analysis framework that runs inside Cursor IDE. Drop the `.cursor/rules/` directory into any project to get structured, comprehensive security reviews powered by your AI assistant.
+Security guardrails and token discipline for AI coding agents, for Cursor and Claude Code.
 
-## What is RAILGUARD?
+RAILGUARDS has two layers:
 
-RAILGUARD is an 8-pillar security analysis methodology (Risk First, Attached Constraints, Interpretative Framing, Local Defaults, Generative Path Checks, Uncertainty Disclosure, Auditability, Revision + Dialogue) that systematically guides AI assistants through vulnerability detection, severity assessment, and remediation.
+1. **Always-on guardrails:** a short block in `AGENTS.md` (31 lines) plus hooks that enforce the riskiest cases. It covers agent security (untrusted content, secrets, dependencies, irreversible actions, MCP tools) and spend habits (search before reading, delegate exploration, keep output small).
+2. **On-demand skills** that load only when needed:
+   - `railguards-audit`: a structured security audit run by subagents. Recon runs first, then four domain auditors in parallel, then a verifier.
+   - `railguards-token-plan`: diagnoses where your agent wastes tokens, recommends fixes layer by layer (subagents, code graphs, memory, ignore files), scaffolds them, and measures the before-and-after fixed overhead.
+   - `railguards-vet`: vets a package, MCP server, skill, rule file, or hook before your agent installs or uses it.
 
-Instead of hoping your AI catches security issues, RAILGUARD gives it a structured playbook covering OWASP Top 10, business logic flaws, hardcoded credentials, and more.
+RAILGUARDS replaces RAILGUARD v1, whose 26 rule files loaded about 10,500 tokens into every request. A RAILGUARDS install adds about 1,050 tokens per request (always-on block plus skill descriptions), and the detection depth moved into the audit skill. See [MIGRATION.md](MIGRATION.md).
 
-## Quick Start
+## Quick start
 
-### 1. Copy rules into your project
+Requires Python 3.9 or newer (the hooks run on it; standard library only).
 
 ```bash
-cp -r railguard-portable/.cursor/rules/ /path/to/your-project/.cursor/rules/
+git clone https://github.com/Protogrumbles/Rail-Guard.git railguards
+railguards/scripts/install.sh /path/to/your-project            # detects Cursor and/or Claude Code
+railguards/scripts/install.sh /path/to/your-project --tool both --profile strict
 ```
 
-If your project already has a `.cursor/rules/` directory, merge the files. RAILGUARD rules use numbered prefixes to avoid conflicts.
+Restart the agent, then try it:
 
-### 2. Trigger a security scan
+| Say | What happens |
+|---|---|
+| "security audit" | Audits changed files (uncommitted changes plus commits not on the default branch) |
+| "full security audit" | Audits the whole repository |
+| "token plan" or "reduce token usage" | Diagnoses token waste, plans, scaffolds after you confirm, then measures |
+| "vet this package / MCP server / skill" | Returns **Allow**, **Allow with conditions**, or **Reject** with reasons |
 
-In Cursor, type any of these in chat:
+Findings appear in chat, grouped by severity, each with a rule ID, a confidence level, a source-to-sink trace, and remediation in your project's language. A Markdown, JSON, or SARIF file is written only if you ask.
 
-- "Security audit"
-- "Analyze my code for vulnerabilities"
-- "Security review"
-- "Find security vulnerabilities"
-- "Vulnerability assessment"
+### Installer options
 
-The AI will follow the RAILGUARD workflow automatically.
+| Option | Effect |
+|---|---|
+| `--tool auto\|cursor\|claude\|both` | Which tool to configure. `auto` (default) looks for `.cursor/`, `.claude/`, or `CLAUDE.md`, and falls back to Cursor. |
+| `--profile ask\|strict` | `ask` (default) pauses risky actions for approval. `strict` blocks the highest-risk ones and makes Cursor's permission hooks fail closed. |
+| `--core agents-md\|cursor-rule` | Where the always-on block goes. Claude Code always uses `AGENTS.md` (imported from `CLAUDE.md`). |
+| `--no-hooks` | Install rules and skills only |
+| `--uninstall` | Remove everything RAILGUARDS added; your own content and `.railguards/` data files stay |
 
-### 3. Review the report
+The installer never overwrites your content: Markdown changes live between `<!-- RAILGUARDS:BEGIN -->` and `<!-- RAILGUARDS:END -->`, and JSON hook configs are merged. Re-running it upgrades in place.
 
-Results appear directly in chat, grouped by severity (Critical > High > Medium > Low). Each finding includes:
-- Exact file and line location
-- Vulnerable code snippet
-- Severity with justification
-- Remediation steps with secure code examples
+### What gets installed
 
-## Included Rules
+| Piece | Cursor | Claude Code |
+|---|---|---|
+| Always-on block | `AGENTS.md` (or `.cursor/rules/railguards.mdc`) | `AGENTS.md` plus an `@AGENTS.md` import in `CLAUDE.md` |
+| Skills | `.agents/skills/railguards-*` | `.claude/skills/railguards-*` (Cursor reads these too) |
+| Subagents | `.cursor/agents/railguards-*.md` | `.claude/agents/railguards-*.md` (recon runs on Haiku) |
+| Hooks | `.cursor/hooks.json` | `.claude/settings.json` |
+| Hook engine, scripts, config | `.railguards/` | `.railguards/` |
 
-### Always-On Rules (loaded automatically)
+## Hooks
 
-| Rule | Purpose |
-|------|---------|
-| 00-railguard-core | Core methodology and expertise definition |
-| 01-security-analysis-trigger | Trigger phrases and workflow initiation |
-| 02-input-validation | Input validation and injection prevention |
-| 03-authentication | Authentication and session management |
-| 07-logic-vulnerability-analysis | Business logic flaws, race conditions, IDOR |
-| 12-xss-ssti-detection | XSS and SSTI pattern detection |
-| 13-output-format-rules | Report formatting (chat-first, no auto-files) |
-| 14-security-analysis-workflow | Step-by-step analysis process |
-| 15-standardized-finding-format | Consistent vulnerability reporting structure |
-| 16-validation-and-quality-assurance | QA checks for findings accuracy |
-| 17-severity-assessment-framework | CIA triad severity scoring |
-| 18-code-analysis-focus-areas | OWASP Top 10 analysis checklist |
-| 19-language-detection-and-matching | Match remediation to your language/framework |
-| 23-hardcoded-credentials-detection | Detect secrets in source code |
-| 26-serialization-usage-discovery | Detect serialization for deeper analysis |
-| 28-false-positive-and-mitigation-analysis | Eliminate false positives before reporting |
-| exclusions | Exclude test files, media, dependencies |
+One engine, `hooks/guard.py`, applies the same policy in both tools.
 
-### On-Demand Rules (loaded when relevant)
+| Event | Ask profile (default) | Strict profile |
+|---|---|---|
+| Shell: `curl \| sh`, `rm -rf` on root, home, or the current directory, destructive SQL, reading secrets through the shell, force push to a protected branch | Ask | Deny |
+| Shell: other force pushes, `git reset --hard`, deploys, publishes, infrastructure changes | Ask | Ask |
+| Shell: installing a new package | Ask, with a reminder to run `railguards-vet` | Same |
+| Reading a likely secret file (`.env`, keys, cloud credentials) | Claude Code asks. Cursor cannot ask on reads, so it blocks and explains how to allow the file. | Deny |
+| After a file edit | Reports hidden Unicode and likely secrets to the agent | Same |
+| After an MCP tool call | Appends server, tool, duration, and an input hash to `.railguards/audit-log.jsonl` (never raw results) | Same |
 
-| Rule | Triggered When |
-|------|----------------|
-| 04-llm-prompt-injection | LLM/AI integration detected |
-| 05-sql-injection-prevention | SQL database usage found |
-| 06-xss-prevention | Web app with user content |
-| 08-cors-severity-assessment | CORS implementation detected |
-| 20-specialized-rule-dispatch | Routes to correct specialized rule |
-| 21-xss-type-classification | XSS found, needs type classification |
-| 24-registration-auth-context-analysis | Unauthenticated endpoints found |
-| 25-deserialization-detection | Serialization usage detected |
-| 27-cors-usage-discovery | Checking for CORS presence |
+To let agents read a specific file that looks like a secret (for example a test fixture), add its path or glob to `.railguards/allow-read`. To change the profile, edit `.railguards/config.json` or set `RAILGUARDS_PROFILE`. Internal hook errors fail open, so a broken hook never blocks your agent.
 
-## Complementary Tools
+## The RAILGUARDS pillars
 
-RAILGUARD works best alongside these free tools:
+Every audit module answers the same nine questions, in order ([core/pillars.md](core/pillars.md)):
 
-| Tool | What It Does | Install |
-|------|-------------|---------|
-| Semgrep | Static analysis with 2000+ rules | pip install semgrep, then semgrep scan --config auto |
-| gitleaks | Scan git history for leaked secrets | brew install gitleaks or grab the binary |
-| trufflehog | Find credentials in repos | brew install trufflehog |
-| trivy | Container and dependency CVE scanning | brew install trivy |
-| pip-audit | Python dependency vulnerabilities | pip install pip-audit |
-| npm audit | Node.js dependency vulnerabilities | Built into npm |
+| | Pillar | Question |
+|---|---|---|
+| R | Risk First | What goal, risk, and context does this module address? |
+| A | Attached Constraints | What must ALWAYS or NEVER happen? |
+| I | Isolation | Where are the trust boundaries, what is untrusted, and what privilege does each component get? |
+| L | Local Defaults | What does the secure implementation look like? |
+| G | Generative Path Checks | Which verifiable checks confirm the code is safe? |
+| U | Uncertainty Disclosure | What is the safe default when requirements are unclear, and when should this escalate? |
+| A | Auditability | What should be logged so behavior can be reconstructed? |
+| R | Review | Which questions keep this safe over time? |
+| S | Spend | Who runs this module, what may they read, and how do they keep it cheap? |
 
-## Customization
+Audit modules: input validation, SQL injection, authentication, business logic, XSS and SSTI, CORS, deserialization, secrets, LLM application security (OWASP LLM Top 10 2025 and Agentic Top 10 2026), MCP and tools, and agent supply chain. Severity, finding format, and false-positive filtering are shared procedure modules.
 
-### Adding project-specific exclusions
+## Optional tools
 
-Edit exclusions.mdc to add patterns specific to your project.
+The audit runs these when they are installed and triages their output instead of reading every file: [Semgrep](https://semgrep.dev), [gitleaks](https://github.com/gitleaks/gitleaks), [osv-scanner](https://github.com/google/osv-scanner), [trivy](https://github.com/aquasecurity/trivy). With [tiktoken](https://github.com/openai/tiktoken) installed, `measure_overhead.py` counts tokens exactly instead of estimating four characters per token.
 
-### Adding your own remediation docs
+Helper scripts (copied to `.railguards/scripts/`):
 
-Create additional .mdc files in .cursor/rules/ following the RAILGUARD format with R (Risk First), A (Attached Constraints), I (Interpretative Framing), L (Local Defaults), G (Generative Path Checks), U (Uncertainty Disclosure), A (Auditability), and R+D (Revision + Dialogue) sections.
+- `measure_overhead.py [--save-baseline | --compare]`: fixed context overhead per request, per tool.
+- `check_unicode.py PATH...`: finds hidden and bidirectional characters (rules-file backdoors).
+- `mcp_lock.py snapshot|verify [--probe]`: pins MCP server configs and tool definitions in `.railguards/mcp-lock.json` and reports drift (rug pulls).
 
-### Adjusting severity thresholds
+## Repository layout
 
-Edit 17-severity-assessment-framework.mdc to match your risk tolerance.
+```
+AGENTS.md                 always-on block (the source the installer copies)
+core/pillars.md           pillar definitions and the module template
+skills/                   railguards-audit (with modules/), railguards-token-plan, railguards-vet
+hooks/guard.py            hook engine for both tools
+scripts/                  installer, measurement, Unicode scanner, MCP lock, CI checks
+adapters/                 Cursor and Claude Code subagents, hooks, rule mirror, CLAUDE.md import
+evals/                    vulnerable fixtures with expected findings, scorer, guardrail scenarios
+tests/                    unit tests
+docs/superpowers/         design spec and implementation plan
+```
 
-## How It Works
+## Development
 
-1. You say "security audit" in Cursor chat
-2. Rules activate - the AI loads the workflow and methodology
-3. Discovery - maps your codebase, identifies language/framework
-4. Detection - runs through mandatory checks (input validation, auth, logic, XSS/SSTI, credentials, serialization, CORS)
-5. Specialized analysis - loads additional rules only when relevant vulnerabilities are found
-6. False positive filtering - removes framework-mitigated issues, adjusts severity for mitigations
-7. Report - presents findings in chat with code, severity, and fix examples
+```bash
+python3 -m unittest discover -s tests      # unit tests
+python3 scripts/ci_checks.py               # always-on budget, hidden Unicode, pillars, adapter mirrors
+shellcheck scripts/*.sh
+```
+
+CI runs all three. The always-on block is limited to 60 lines and 1,200 estimated tokens. The Cursor and Claude Code subagents must keep identical bodies. `adapters/cursor/rules/railguards.mdc` must match the `AGENTS.md` block.
+
+To measure audit quality, run an audit on a copy of a fixture and score the JSON export; see [evals/README.md](evals/README.md).
 
 ## License
 
-This portable edition is derived from the RAILGUARD security analysis methodology. Use it freely in personal and commercial projects.
+Derived from the RAILGUARD security analysis methodology. Use it freely in personal and commercial projects.

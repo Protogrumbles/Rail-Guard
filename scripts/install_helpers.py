@@ -23,6 +23,16 @@ ENGINE_SCRIPTS = ("check_unicode.py", "measure_overhead.py", "mcp_lock.py")
 SKILL_DIRS = (".agents/skills", ".claude/skills", ".cursor/skills")
 GITIGNORE_LINES = (".railguards/audit-log.jsonl", ".railguards/progress.md")
 CURSOR_PERMISSION_EVENTS = ("beforeShellExecution", "beforeReadFile")
+V1_RULE_FILES = frozenset(f"{name}.mdc" for name in (
+    "00-railguard-core", "01-security-analysis-trigger", "02-input-validation", "03-authentication",
+    "04-llm-prompt-injection", "05-sql-injection-prevention", "06-xss-prevention", "07-logic-vulnerability-analysis",
+    "08-cors-severity-assessment", "12-xss-ssti-detection", "13-output-format-rules", "14-security-analysis-workflow",
+    "15-standardized-finding-format", "16-validation-and-quality-assurance", "17-severity-assessment-framework",
+    "18-code-analysis-focus-areas", "19-language-detection-and-matching", "20-specialized-rule-dispatch",
+    "21-xss-type-classification", "23-hardcoded-credentials-detection", "24-registration-auth-context-analysis",
+    "25-deserialization-detection", "26-serialization-usage-discovery", "27-cors-usage-discovery",
+    "28-false-positive-and-mitigation-analysis", "exclusions",
+))
 ALLOW_READ_HEADER = (
     "# Paths (gitignore-style globs, relative to the project root) that RAILGUARDS lets agents read\n"
     "# even though they look like secret files. One per line. Example: config/.env.test\n"
@@ -242,7 +252,18 @@ def install(target: Path, tools: set[str], core: str = "agents-md", profile: str
 
     _edit_text(target / ".gitignore", lambda t: upsert_block(t, "\n".join((GITIGNORE_BEGIN, *GITIGNORE_LINES, GITIGNORE_END)), GITIGNORE_BEGIN, GITIGNORE_END))
     done.append(".gitignore (RAILGUARDS block)")
+
+    legacy = find_v1_rules(target)
+    if legacy:
+        done.append(f"warning: {len(legacy)} RAILGUARD v1 rule files still in .cursor/rules/ load on every request; remove them (see MIGRATION.md)")
     return done
+
+
+def find_v1_rules(target: Path) -> list[Path]:
+    rules = target / ".cursor" / "rules"
+    if not rules.is_dir():
+        return []
+    return sorted(p for p in rules.glob("*.mdc") if p.name in V1_RULE_FILES)
 
 
 def uninstall(target: Path) -> list[str]:
