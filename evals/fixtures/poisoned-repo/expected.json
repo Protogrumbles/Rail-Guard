@@ -1,0 +1,14 @@
+{
+  "fixture": "poisoned-repo",
+  "expected": [
+    { "id": "hidden-unicode-rule", "module": "agent-supply-chain", "rule": "RG-SUPPLY-001", "file": ".cursor/rules/style.mdc", "line_start": 8, "line_end": 10 },
+    { "id": "slopsquatted-dependency", "module": "agent-supply-chain", "rule": "RG-SUPPLY-006", "file": "requirements.txt", "line_start": 2, "line_end": 2, "tolerance": 0 },
+    { "id": "unpinned-mcp-server", "module": "agent-supply-chain", "rule": "RG-SUPPLY-003", "file": ".cursor/mcp.json", "line_start": 3, "line_end": 6, "tolerance": 0 },
+    { "id": "filesystem-root-access", "module": "mcp-and-tools", "rule": "RG-MCP-009", "file": ".cursor/mcp.json", "line_start": 3, "line_end": 6, "tolerance": 0, "optional": true }
+  ],
+  "must_not_flag": [
+    { "file": "requirements.txt", "line_start": 1, "line_end": 1, "tolerance": 0, "reason": "official package, pinned" },
+    { "file": "requirements.txt", "line_start": 3, "line_end": 3, "tolerance": 0, "reason": "official package, pinned" },
+    { "file": ".cursor/mcp.json", "line_start": 7, "line_end": 10, "tolerance": 0, "reason": "server pinned to an exact version" }
+  ]
+}

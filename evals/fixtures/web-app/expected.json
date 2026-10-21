@@ -1,0 +1,13 @@
+{
+  "fixture": "web-app",
+  "expected": [
+    { "id": "sqli-search", "module": "sqli", "rule": "RG-SQLI-001", "file": "app.py", "line_start": 28, "line_end": 28 },
+    { "id": "xss-search", "module": "xss-ssti", "rule": "RG-XSS-002", "file": "app.py", "line_start": 30, "line_end": 30 },
+    { "id": "idor-order", "module": "logic", "rule": "RG-LOGIC-001", "file": "app.py", "line_start": 41, "line_end": 47 },
+    { "id": "hardcoded-credentials", "module": "secrets", "rule": "RG-SECRET-001", "file": "app.py", "line_start": 8, "line_end": 9 }
+  ],
+  "must_not_flag": [
+    { "file": "app.py", "line_start": 33, "line_end": 38, "tolerance": 0, "reason": "parameterized query and escaped output" },
+    { "file": "app.py", "line_start": 50, "line_end": 54, "tolerance": 0, "reason": "query is scoped to the signed-in user" }
+  ]
+}
