@@ -1,0 +1,3 @@
+<!-- RAILGUARDS:BEGIN -->
+@AGENTS.md
+<!-- RAILGUARDS:END -->

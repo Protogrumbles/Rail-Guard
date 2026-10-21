@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      { "command": "python3 .railguards/hooks/guard.py --tool cursor --event shell", "timeout": 10 }
+    ],
+    "beforeReadFile": [
+      { "command": "python3 .railguards/hooks/guard.py --tool cursor --event read", "timeout": 10 }
+    ],
+    "postToolUse": [
+      { "command": "python3 .railguards/hooks/guard.py --tool cursor --event edit", "matcher": "Write", "timeout": 10 }
+    ],
+    "afterFileEdit": [
+      { "command": "python3 .railguards/hooks/guard.py --tool cursor --event edit", "timeout": 10 }
+    ],
+    "afterMCPExecution": [
+      { "command": "python3 .railguards/hooks/guard.py --tool cursor --event mcp", "timeout": 10 }
+    ]
+  }
+}
