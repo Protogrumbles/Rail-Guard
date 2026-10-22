@@ -331,7 +331,7 @@ def main(argv: list[str] | None = None) -> int:
     report = measure(target.resolve())
     overhead = ", ".join(f"{tool} {report['per_tool'][tool]}" for tool in sorted(tools))
     print(f"Fixed context overhead per request (estimated tokens): {overhead}. Details: python3 .railguards/scripts/measure_overhead.py")
-    print("Next: restart your agent so it picks up the hooks, then try \"security audit\" or \"token plan\".")
+    print("Next: open a new agent chat, type / and run railguards-status before any work.")
     return 0
 
 

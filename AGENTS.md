@@ -28,4 +28,5 @@ These rules apply to every task. Detailed workflows live in the `railguards-*` s
 - "security audit" (changed files) or "full security audit" (whole repo): use the `railguards-audit` skill.
 - "token plan" or "reduce token usage": use the `railguards-token-plan` skill.
 - Adding a dependency, MCP server, skill, rule, or hook: use the `railguards-vet` skill.
+- Before other work, `/railguards-status` checks that this chat loaded RAILGUARDS, then stops. `/railguards-security-audit`, `/railguards-full-audit`, `/railguards-token-plan`, and `/railguards-mcp-vet` start those workflows.
 <!-- RAILGUARDS:END -->

@@ -1,6 +1,6 @@
 ---
 name: railguards-vet
-description: Vet a package, MCP server, skill, rule file, hook, or plugin before an AI agent installs or uses it, and return Allow, Allow with conditions, or Reject with reasons. Use before adding any dependency, when configuring a new MCP server, when importing third-party skills, rules or hooks, and when the token plan recommends a tool.
+description: Vet a package, MCP server, skill, rule file, hook, or plugin before an AI agent installs or uses it, and return Allow, Allow with conditions, or Reject with reasons. Use before adding any dependency, when configuring a new MCP server, for an MCP vet, when importing third-party skills, rules or hooks, and when the token plan recommends a tool.
 ---
 
 # RAILGUARDS Vet

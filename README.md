@@ -22,14 +22,20 @@ railguards/scripts/install.sh /path/to/your-project            # detects Cursor 
 railguards/scripts/install.sh /path/to/your-project --tool both --profile strict
 ```
 
-Restart the agent, then try it:
+Restart Cursor, then open a **new** chat. In the agent input, type `/` (forward slash, the same menu Superpowers uses). These entries should be listed:
 
-| Say | What happens |
+| Command | What it does |
 |---|---|
-| "security audit" | Audits changed files (uncommitted changes plus commits not on the default branch) |
-| "full security audit" | Audits the whole repository |
-| "token plan" or "reduce token usage" | Diagnoses token waste, plans, scaffolds after you confirm, then measures |
-| "vet this package / MCP server / skill" | Returns **Allow**, **Allow with conditions**, or **Reject** with reasons |
+| `/railguards-status` | Checks that this chat can see RAILGUARDS, then stops. Send this before any work. |
+| `/railguards-security-audit` | Audits changed files (uncommitted changes plus commits not on the default branch) |
+| `/railguards-full-audit` | Audits the whole repository |
+| `/railguards-token-plan` | Diagnoses token waste, plans, scaffolds after you confirm, then measures |
+| `/railguards-mcp-vet` | Vets an MCP server and returns **Allow**, **Allow with conditions**, or **Reject** |
+| `/railguards-vet` | Vets a package, skill, rule, hook, or MCP server |
+
+`/railguards-status` is the preflight. It reports whether the always-on text, skills, subagents, hook config, and hook engine are present. It does not start an audit or edit the project. A chat opened before install will not show these names; reinstall if needed and start another chat. After a `ready` report, the next message in that chat can be the work.
+
+Typing the phrases still works: "security audit", "full security audit", "token plan", and "vet this package".
 
 Findings appear in chat, grouped by severity, each with a rule ID, a confidence level, a source-to-sink trace, and remediation in your project's language. A Markdown, JSON, or SARIF file is written only if you ask.
 
