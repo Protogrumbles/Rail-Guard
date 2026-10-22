@@ -17,10 +17,17 @@ RAILGUARDS replaces RAILGUARD v1, whose 26 rule files loaded about 10,500 tokens
 Requires Python 3.9 or newer (the hooks run on it; standard library only).
 
 ```bash
-git clone https://github.com/Protogrumbles/Rail-Guard.git railguards
-railguards/scripts/install.sh /path/to/your-project            # detects Cursor and/or Claude Code
-railguards/scripts/install.sh /path/to/your-project --tool both --profile strict
+git clone --branch cursor/railguards-modernization-6c7a \
+  https://github.com/Protogrumbles/Rail-Guard.git railguards
+
+# The last argument is the project you open in Cursor. "." means the directory you are in.
+railguards/scripts/install.sh . --tool cursor
+
+# Or name that project by its real path:
+railguards/scripts/install.sh /absolute/path/to/that/project --tool both --profile strict
 ```
+
+`/path/to/your-project` in older examples is not a real directory. The installer will not create the target, and it will not install into the `railguards` checkout itself.
 
 Restart Cursor, then open a **new** chat. In the agent input, type `/` (forward slash, the same menu Superpowers uses). These entries should be listed:
 

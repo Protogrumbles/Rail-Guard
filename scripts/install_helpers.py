@@ -174,9 +174,16 @@ def _remove_skills(target: Path, skill_dir: str) -> None:
 
 
 def install(target: Path, tools: set[str], core: str = "agents-md", profile: str = "ask", hooks: bool = True) -> list[str]:
-    target = Path(target).resolve()
+    given = Path(target)
+    target = given.resolve()
     if not target.is_dir():
-        raise InstallError(f"target directory does not exist: {target}")
+        placeholder = given.as_posix().rstrip("/") in {"/path/to/your-project", "path/to/your-project"}
+        hint = " /path/to/your-project is a placeholder from the docs, not a directory on your machine." if placeholder else ""
+        raise InstallError(
+            f"target directory does not exist: {target}.{hint} "
+            "Pass the project you want to protect. If you are already in that project: "
+            "railguards/scripts/install.sh . --tool cursor"
+        )
     if target == SRC:
         raise InstallError("refusing to install RAILGUARDS into its own source repository")
     done: list[str] = []

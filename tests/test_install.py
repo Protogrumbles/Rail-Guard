@@ -194,6 +194,12 @@ class EndToEndTest(unittest.TestCase):
             self.skipTest("v1-legacy tag not available in this checkout")
         self.assertEqual({Path(p).name for p in proc.stdout.split()}, set(ih.V1_RULE_FILES))
 
+    def test_missing_target_explains_the_docs_placeholder(self):
+        with self.assertRaises(ih.InstallError) as caught:
+            ih.install(Path("/path/to/your-project"), {"cursor"})
+        self.assertIn("placeholder", str(caught.exception))
+        self.assertIn("install.sh .", str(caught.exception))
+
     def test_refuses_own_source_repo(self):
         with self.assertRaises(ih.InstallError):
             ih.install(ROOT, {"cursor"})
