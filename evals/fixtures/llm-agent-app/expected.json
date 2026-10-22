@@ -1,0 +1,13 @@
+{
+  "fixture": "llm-agent-app",
+  "expected": [
+    { "id": "lethal-trifecta", "module": "llm-app-security", "rule": "RG-LLM-002", "file": "agent.py", "line_start": 36, "line_end": 54 },
+    { "id": "model-output-to-shell", "module": "llm-app-security", "also_accept": ["input-validation"], "rule": "RG-LLM-003", "file": "agent.py", "line_start": 27, "line_end": 29 },
+    { "id": "rag-no-tenant-isolation", "module": "llm-app-security", "also_accept": ["logic"], "rule": "RG-LLM-006", "file": "rag.py", "line_start": 8, "line_end": 10 },
+    { "id": "ssrf-fetch-url", "module": "input-validation", "also_accept": ["llm-app-security"], "rule": "RG-INPUT-007", "file": "agent.py", "line_start": 17, "line_end": 19, "optional": true }
+  ],
+  "must_not_flag": [
+    { "file": "rag.py", "line_start": 13, "line_end": 15, "tolerance": 0, "reason": "tenant filter applied to the vector search" },
+    { "file": "agent.py", "line_start": 32, "line_end": 33, "tolerance": 0, "reason": "pure function with no side effects" }
+  ]
+}

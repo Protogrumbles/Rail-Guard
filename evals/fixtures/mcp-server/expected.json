@@ -1,0 +1,12 @@
+{
+  "fixture": "mcp-server",
+  "expected": [
+    { "id": "tool-poisoning", "module": "mcp-and-tools", "rule": "RG-MCP-001", "file": "server.py", "line_start": 14, "line_end": 24 },
+    { "id": "bind-all-interfaces", "module": "mcp-and-tools", "rule": "RG-MCP-007", "file": "server.py", "line_start": 10, "line_end": 11 },
+    { "id": "command-injection", "module": "mcp-and-tools", "also_accept": ["input-validation"], "rule": "RG-MCP-008", "file": "server.py", "line_start": 27, "line_end": 31 },
+    { "id": "http-without-auth", "module": "mcp-and-tools", "rule": "RG-MCP-005", "file": "server.py", "line_start": 44, "line_end": 44, "optional": true }
+  ],
+  "must_not_flag": [
+    { "file": "server.py", "line_start": 34, "line_end": 40, "tolerance": 0, "reason": "path is resolved and checked against the notes directory" }
+  ]
+}

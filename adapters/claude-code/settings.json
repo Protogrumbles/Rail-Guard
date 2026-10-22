@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.railguards/hooks/guard.py\" --tool claude --event shell", "timeout": 10 }]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [{ "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.railguards/hooks/guard.py\" --tool claude --event read", "timeout": 10 }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.railguards/hooks/guard.py\" --tool claude --event edit", "timeout": 10 }]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [{ "type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.railguards/hooks/guard.py\" --tool claude --event mcp", "timeout": 10 }]
+      }
+    ]
+  }
+}
